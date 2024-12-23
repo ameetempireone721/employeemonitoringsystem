@@ -1,0 +1,104 @@
+/* General layout for the page */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Wrapper for centering the content */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Styling the login container */
+.login-container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Styling the header with logo */
+.signup-header {
+    margin-bottom: 20px;
+}
+
+.signup-logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Login title styling */
+h2 {
+    font-size: 26px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Input field styling */
+.input-field {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: #0033A0;
+}
+
+/* Button styling */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #0033A0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #0033A0;
+}
+
+/* Error message styling */
+.error-message {
+    color: #f44336;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Styling for the signup section */
+.signup-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup-button:hover {
+    background-color: #f29d75;
+}
