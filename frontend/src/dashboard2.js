@@ -25,6 +25,7 @@ import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from 'c
 import LogoutButton from './logout';
 import BASE_URL from './config';
 
+
 ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 // Helper function to format duration in seconds to minutes:seconds format
