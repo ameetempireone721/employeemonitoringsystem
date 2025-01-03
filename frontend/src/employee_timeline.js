@@ -62,11 +62,16 @@ const EmployeeTimeline = () => {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [nameFilter, setNameFilter] = useState(""); // New state for name filter
+    const token = localStorage.getItem('token');
 
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL}/api/employee-status?date=${date}`);
+            const response = await axios.get(`${BASE_URL}/api/employee-status?date=${date}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const aggregatedData = aggregateRecords(response.data || []);
             setRecords(aggregatedData);
         } catch (error) {

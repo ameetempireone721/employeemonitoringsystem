@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
@@ -38,8 +39,24 @@ const handleDisconnect = () => {
 
 handleDisconnect();
 
+// Secret key for JWT
+const SECRET_KEY = 'd9347521c6d2fb1a031c02b2b05ee6a6197d7660e768fd9fd2b1d31c8a608125f2f643de0c20cb0759149ba98ed2d4b89dc3f58937a77ba866df5fe016f2384b'; // Replace with a secure secret key
+
+// Middleware to verify token
+function verifyToken(req, res, next) {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(403).send({ message: 'No token provided!' });
+    
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) return res.status(500).send({ message: 'Failed to authenticate token.' });
+        req.userId = decoded.id;
+        next();
+    });
+}
+
 // Route to fetch live agent statuses
-app.get('/api/agent-status', (req, res) => {
+app.get('/api/agent-status', verifyToken, (req, res) => {
+    console.log('Received request for agent status');
     const query = `
     SELECT 
     e.employee_id, 
@@ -77,7 +94,7 @@ WHERE
 });
 
 
-app.get('/api/single-employee', (req, res) => {
+app.get('/api/single-employee', verifyToken,(req, res) => {
     
     const { date, email } = req.query;
     const selectedDate = date || new Date().toISOString().split('T')[0]; // Use provided date or default to today's date
@@ -115,7 +132,7 @@ ORDER BY
     });
 });
 
-app.post('/api/update-team', (req, res) => {
+app.post('/api/update-team', verifyToken,(req, res) => {
     const { employeeId, newTeam } = req.body;
 
     // Validate input
@@ -134,7 +151,7 @@ app.post('/api/update-team', (req, res) => {
     });
 });
 
-app.get('/api/getemployees', (req, res) => {
+app.get('/api/getemployees', verifyToken,(req, res) => {
     
     const query = `
     SELECT 
@@ -155,7 +172,7 @@ app.get('/api/getemployees', (req, res) => {
     });
 });
 
-app.get('/api/employee-status', (req, res) => {
+app.get('/api/employee-status', verifyToken,(req, res) => {
     
     const { date } = req.query;
     const selectedDate = date || new Date().toISOString().split('T')[0]; // Use provided date or default to today's date
@@ -192,7 +209,7 @@ ORDER BY
 });
 
 // New endpoint for fetching report data based on filters (team and date)
-app.get('/api/generate-report', (req, res) => {
+app.get('/api/generate-report', verifyToken,(req, res) => {
     const { team, date } = req.query;
     const selectedDate = date || new Date().toISOString().split('T')[0]; // Default to today's date if no date is provided
     let query = `
@@ -231,7 +248,7 @@ WHERE
 });
 
 
-app.post('/api/signup', (req, res) => {
+app.post('/api/signup', verifyToken,(req, res) => {
     const { firstName, lastName, email, team , password, is_admin} = req.body;
 
     if (!email.endsWith('@empireonegroup.com')) {
@@ -256,7 +273,7 @@ app.post('/api/signup', (req, res) => {
     }
 });
 
-app.post('/api/reset-password', (req, res) => {
+app.post('/api/reset-password', verifyToken,(req, res) => {
     const { email, newPassword } = req.body;
 
     // Validate input
@@ -292,7 +309,9 @@ app.post('/api/login', (req, res) => {
         }
 
         const user = results[0];
-        res.json({ message: 'Login successful', user });
+        const token = jwt.sign({ id: user.employee_id }, SECRET_KEY, { expiresIn: '1h' });
+        res.json({ message: 'Login successful', user, token });
+        
     });
 });
 

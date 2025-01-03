@@ -94,9 +94,15 @@ const UpdateTeamPage = () => {
     const navigate = useNavigate();
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
+    const token = localStorage.getItem('token');
+    
 
     useEffect(() => {
-        axios.get(`${BASE_URL}/api/getemployees`)
+        axios.get(`${BASE_URL}/api/getemployees`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setEmployees(response.data);
                 setLoading(false);
@@ -107,8 +113,13 @@ const UpdateTeamPage = () => {
     const handleUpdateTeam = (employeeId) => {
         const employee = employees.find(emp => emp.employee_id === employeeId);
         const employeeName = employee ? employee.name : 'Unknown Employee';
+        const token = localStorage.getItem('token');
 
-        axios.post(`${BASE_URL}/api/update-team`, { employeeId, newTeam })
+        axios.post(`${BASE_URL}/api/update-team`, { employeeId, newTeam }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(() => {
                 setEmployees(employees.map(emp =>
                     emp.employee_id === employeeId ? { ...emp, team: newTeam } : emp
@@ -147,6 +158,10 @@ const UpdateTeamPage = () => {
                 password,
                 team,
                 is_admin: isAdmin,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             setSignupSuccess('Employee account created successfully!');
@@ -173,7 +188,11 @@ const UpdateTeamPage = () => {
         setSignupError('');
 
         try {
-            await axios.post(`${BASE_URL}/api/reset-password`, { email: resetEmail, newPassword: resetPassword });
+            await axios.post(`${BASE_URL}/api/reset-password`, { email: resetEmail, newPassword: resetPassword }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             setResetSuccessMessage('Password reset successfully!');
             setResetEmail('');
             setResetPassword('');

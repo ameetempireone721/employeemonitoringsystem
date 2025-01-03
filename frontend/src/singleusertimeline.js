@@ -63,12 +63,16 @@ const SingleUserTimeline = () => {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const { user } = useContext(AuthContext);
-    console.log("User",user)
+    const token = localStorage.getItem('token');
     
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL}/api/single-employee?date=${date}&email=${user.email}`);
+            const response = await axios.get(`${BASE_URL}/api/single-employee?date=${date}&email=${user.email}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const aggregatedData = aggregateRecords(response.data || []);
             setRecords(aggregatedData);
         } catch (error) {
@@ -117,7 +121,6 @@ const SingleUserTimeline = () => {
     };
 
     const getCurrentStatus = (statuses) => {
-        console.log(statuses)
             if (!statuses || statuses.length === 0) {
                 return "No Status Available";
             }
