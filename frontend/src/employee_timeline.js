@@ -3,6 +3,7 @@ import axios from "axios";
 import { Container, Typography, TextField, Button, CircularProgress, Tooltip ,Grid} from "@mui/material";
 import styled from "@emotion/styled";
 import { Link } from 'react-router-dom';
+import BASE_URL from "./config";
 
 const TimelineContainer = styled.div`
     display: flex;
@@ -65,7 +66,7 @@ const EmployeeTimeline = () => {
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:5000/api/employee-status?date=${date}`);
+            const response = await axios.get(`${BASE_URL}/api/employee-status?date=${date}`);
             const aggregatedData = aggregateRecords(response.data || []);
             setRecords(aggregatedData);
         } catch (error) {

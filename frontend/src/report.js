@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Button, TextField, MenuItem, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
+import BASE_URL from './config';
 
 const ReportPage = () => {
     const [team, setTeam] = useState('');
@@ -20,7 +21,7 @@ const ReportPage = () => {
 
     const generateReport = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/generate-report?team=${team}&date=${date}`);
+            const response = await fetch(`${BASE_URL}/api/generate-report?team=${team}&date=${date}`);
             if (response.ok) {
                 const data = await response.json();
                 if (data.length === 0) {

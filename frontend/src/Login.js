@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import logo from './assets/Picture1.png';
 import { AuthContext } from './AuthContext';
+import BASE_URL from './config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/login', { email, password });
+            const response = await axios.post(`${BASE_URL}/api/login`, { email, password });
             // Extract user data from the response
             console.log(response)
             const userData = {

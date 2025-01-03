@@ -25,6 +25,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BASE_URL from './config';
 
 // Styled components
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
@@ -95,7 +96,7 @@ const UpdateTeamPage = () => {
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/getemployees')
+        axios.get(`${BASE_URL}/api/getemployees`)
             .then(response => {
                 setEmployees(response.data);
                 setLoading(false);
@@ -107,7 +108,7 @@ const UpdateTeamPage = () => {
         const employee = employees.find(emp => emp.employee_id === employeeId);
         const employeeName = employee ? employee.name : 'Unknown Employee';
 
-        axios.post('http://localhost:5000/api/update-team', { employeeId, newTeam })
+        axios.post(`${BASE_URL}/api/update-team`, { employeeId, newTeam })
             .then(() => {
                 setEmployees(employees.map(emp =>
                     emp.employee_id === employeeId ? { ...emp, team: newTeam } : emp
@@ -139,7 +140,7 @@ const UpdateTeamPage = () => {
         }
 
         try {
-            await axios.post('http://localhost:5000/api/signup', {
+            await axios.post(`${BASE_URL}/api/signup`, {
                 firstName,
                 lastName,
                 email,
@@ -172,7 +173,7 @@ const UpdateTeamPage = () => {
         setSignupError('');
 
         try {
-            await axios.post('http://localhost:5000/api/reset-password', { email: resetEmail, newPassword: resetPassword });
+            await axios.post(`${BASE_URL}/api/reset-password`, { email: resetEmail, newPassword: resetPassword });
             setResetSuccessMessage('Password reset successfully!');
             setResetEmail('');
             setResetPassword('');

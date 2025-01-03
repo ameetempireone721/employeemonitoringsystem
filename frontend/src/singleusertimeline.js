@@ -4,6 +4,7 @@ import { Container, Typography, TextField, Button, CircularProgress, Tooltip, Gr
 import styled from "@emotion/styled";
 import { AuthContext } from "./AuthContext";
 import LogoutButton from "./logout";
+import BASE_URL from "./config";
 
 const TimelineContainer = styled.div`
     display: flex;
@@ -67,7 +68,7 @@ const SingleUserTimeline = () => {
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:5000/api/single-employee?date=${date}&email=${user.email}`);
+            const response = await axios.get(`${BASE_URL}/api/single-employee?date=${date}&email=${user.email}`);
             const aggregatedData = aggregateRecords(response.data || []);
             setRecords(aggregatedData);
         } catch (error) {

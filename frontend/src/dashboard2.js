@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from 'chart.js';
 import LogoutButton from './logout';
+import BASE_URL from './config';
 
 ChartJS.register(ArcElement, ChartTooltip, Legend);
 
@@ -103,7 +104,7 @@ const Dashboard2 = () => {
 
     const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/agent-status');
+                const response = await axios.get(`${BASE_URL}/api/agent-status`);
                 setAgentStatus(response.data);
                 setFilteredStatus(response.data);
                 setLoading(false);
@@ -262,9 +263,12 @@ const Dashboard2 = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <StatusIndicator statusColor={agent.color_code} />
-                                                {agent.status_name}
                                             </TableCell>
-                                            <TableCell>{formatDuration(agent.duration)}</TableCell>
+                                            {agent.status_name === 'Offline' ? (
+                                                <TableCell>Offline</TableCell>
+                                            ) : (
+                                                <TableCell>{formatDuration(agent.duration)}</TableCell>
+                                            )}
                                             <TableCell>{agent.start_date}</TableCell>
                                             <TableCell>{agent.team}</TableCell>
                                         </TableRow>
