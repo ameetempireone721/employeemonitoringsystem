@@ -8,7 +8,7 @@
 *.log
 
 # Ignore build directory if exists
-build/
+server.js
 
 # Ignore environment variable files
 .env
