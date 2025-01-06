@@ -16,11 +16,8 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${BASE_URL}/api/login`, { email, password });
+            const response = await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/login`, { email, password });
             // Extract user data from the response
-            const token = response.data.token; // Extract the token from the response
-            localStorage.setItem('token', token);  // Save the token in localStorage
-            
             const userData = {
                 id: response.data.user.employee_id, // Replace with actual field name for user ID
                 email: response.data.user.email, // Replace with actual field name for email
@@ -30,9 +27,8 @@ const Login = () => {
 
         // Call login function to set session
         login(userData);
-            if (response.data['user']['is_admin']===1){
+            if (response.data['user']['is_admin']===1)
                 navigate(`/dashboard?email=${encodeURIComponent(response.data.user.email)}`);
-            }
             else
                 navigate(`/employee_timeline?email=${encodeURIComponent(response.data.user.email)}`);
         } catch (error) {
