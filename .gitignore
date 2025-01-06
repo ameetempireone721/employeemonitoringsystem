@@ -10,9 +10,6 @@
 # Ignore build directory if exists
 server.js
 
-# Ignore environment variable files
-.env
-
 # Ignore Mac system files
 .DS_Store
 
