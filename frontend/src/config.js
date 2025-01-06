@@ -1,4 +1,4 @@
 // config.js
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'https://eo-monitoring-system.com';
 
 export default BASE_URL;
