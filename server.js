@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
 
 const app = express();
 app.use(cors());
@@ -38,6 +40,12 @@ const handleDisconnect = () => {
 };
 
 handleDisconnect();
+
+// Helper function to hash passwords with constant salt
+function hashPassword(password) {
+    const salt = "7a97b143868b0abe0d7c2d07caf637be"; // Use the constant salt
+    return crypto.createHmac('sha256', salt).update(password).digest('hex');
+}
 
 // Secret key for JWT
 const SECRET_KEY = 'd9347521c6d2fb1a031c02b2b05ee6a6197d7660e768fd9fd2b1d31c8a608125f2f643de0c20cb0759149ba98ed2d4b89dc3f58937a77ba866df5fe016f2384b'; // Replace with a secure secret key
@@ -256,8 +264,9 @@ app.post('/api/signup', verifyToken,(req, res) => {
     }
 
     try {
+        const hashedPassword = hashPassword(password);
         const query = 'INSERT INTO Employees (first_name, last_name, email, team, password, is_admin) VALUES (?, ?, ?, ?, ?, ?)';
-        connection.query(query, [firstName, lastName, email, team, password, is_admin], (err) => {
+        connection.query(query, [firstName, lastName, email, team, hashedPassword, is_admin], (err) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
                     return res.status(409).send('User already exists in the system with that email.');
@@ -297,8 +306,11 @@ app.post('/api/reset-password', verifyToken,(req, res) => {
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
 
+    const hashedPassword = hashPassword(password);
+    console.log(hashedPassword)
+
     const query = 'SELECT * FROM Employees WHERE email = ? AND password = ?';
-    connection.query(query, [email, password], (err, results) => {
+    connection.query(query, [email, hashedPassword], (err, results) => {
         if (err) {
             console.error('Error logging in:', err);
             return res.status(500).send('Error logging in. Please try again.');
