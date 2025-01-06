@@ -3,6 +3,7 @@ const mysql = require('mysql');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+require('dotenv').config();
 
 
 const app = express();
@@ -13,11 +14,11 @@ let connection;
 
 const handleDisconnect = () => {
     connection = mysql.createConnection({
-        host: 'localhost',
-        port: 3306,
-        user: 'root',
-        password: '',
-        database: 'employee_monitoring'
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME
     });
 
     connection.connect((err) => {
@@ -48,7 +49,7 @@ function hashPassword(password) {
 }
 
 // Secret key for JWT
-const SECRET_KEY = 'd9347521c6d2fb1a031c02b2b05ee6a6197d7660e768fd9fd2b1d31c8a608125f2f643de0c20cb0759149ba98ed2d4b89dc3f58937a77ba866df5fe016f2384b'; // Replace with a secure secret key
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // Middleware to verify token
 function verifyToken(req, res, next) {
@@ -75,17 +76,17 @@ app.get('/api/agent-status', verifyToken, (req, res) => {
        TIMESTAMPDIFF(SECOND, as_.start_time, NOW()), 
        TIMESTAMPDIFF(SECOND, as_.start_time, as_.end_time)) AS duration,
     DATE_FORMAT(as_.start_time, '%Y-%m-%d') AS start_date,  -- Extracts only the date (YYYY-MM-DD)
-    e.team  -- Assuming 'team' is the correct column name in Employees table
+    e.team  -- Assuming 'team' is the correct column name in employees table
 FROM 
-    Agent_Status as_ 
+    agent_status as_ 
 JOIN 
-    Employees e ON e.employee_id = as_.employee_id 
+    employees e ON e.employee_id = as_.employee_id 
 JOIN 
-    Statuses s ON s.status_id = as_.status_id
+    statuses s ON s.status_id = as_.status_id
 WHERE 
     as_.start_time = (
         SELECT MAX(start_time) 
-        FROM Agent_Status 
+        FROM agent_status 
         WHERE employee_id = as_.employee_id
     );
     `;
@@ -118,11 +119,11 @@ app.get('/api/single-employee', verifyToken,(req, res) => {
     emp.email as email,
     TIMESTAMPDIFF(SECOND, e.start_time, e.end_time) AS duration
 FROM 
-    Agent_status e
+    agent_status e
 JOIN 
-    Employees emp ON emp.employee_id = e.employee_id
+    employees emp ON emp.employee_id = e.employee_id
 LEFT JOIN 
-    Statuses s ON s.status_id = e.status_id
+    statuses s ON s.status_id = e.status_id
 WHERE 
     DATE(e.start_time) = ?
     AND emp.email = ?
@@ -148,7 +149,7 @@ app.post('/api/update-team', verifyToken,(req, res) => {
         return res.status(400).send('Employee ID and new team are required.');
     }
 
-    const query = 'UPDATE Employees SET team = ? WHERE employee_id = ?';
+    const query = 'UPDATE employees SET team = ? WHERE employee_id = ?';
 
     connection.query(query, [newTeam, employeeId], (err) => {
         if (err) {
@@ -167,7 +168,7 @@ app.get('/api/getemployees', verifyToken,(req, res) => {
     CONCAT(emp.first_name, ' ', emp.last_name) AS name, 
     emp.team
     FROM 
-    Employees emp;
+    employees emp;
     `;
 
     connection.query(query, (err, results) => {
@@ -195,11 +196,11 @@ app.get('/api/employee-status', verifyToken,(req, res) => {
     e.end_time,
     TIMESTAMPDIFF(SECOND, e.start_time, e.end_time) AS duration
 FROM 
-    Agent_status e
+    agent_status e
 JOIN 
-    Employees emp ON emp.employee_id = e.employee_id
+    employees emp ON emp.employee_id = e.employee_id
 LEFT JOIN 
-    Statuses s ON s.status_id = e.status_id
+    statuses s ON s.status_id = e.status_id
 WHERE 
     DATE(e.start_time) = ?
 ORDER BY 
@@ -232,11 +233,11 @@ app.get('/api/generate-report', verifyToken,(req, res) => {
     TIMESTAMPDIFF(SECOND, as_.start_time, as_.end_time) AS duration,
     DATE_FORMAT(as_.start_time, '%Y-%m-%d') AS date
 FROM 
-    Agent_Status as_ 
+    agent_status as_ 
 JOIN 
-    Employees e ON e.employee_id = as_.employee_id 
+    employees e ON e.employee_id = as_.employee_id 
 JOIN 
-    Statuses s ON s.status_id = as_.status_id
+    statuses s ON s.status_id = as_.status_id
 WHERE 
     DATE(as_.start_time) = ?
     AND as_.end_time IS NOT NULL`;
@@ -265,7 +266,7 @@ app.post('/api/signup', verifyToken,(req, res) => {
 
     try {
         const hashedPassword = hashPassword(password);
-        const query = 'INSERT INTO Employees (first_name, last_name, email, team, password, is_admin) VALUES (?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO employees (first_name, last_name, email, team, password, is_admin) VALUES (?, ?, ?, ?, ?, ?)';
         connection.query(query, [firstName, lastName, email, team, hashedPassword, is_admin], (err) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
@@ -290,7 +291,7 @@ app.post('/api/reset-password', verifyToken,(req, res) => {
         return res.status(400).send('Email and new password are required.');
     }
 
-    const query = 'UPDATE Employees SET password = ? WHERE email = ?';
+    const query = 'UPDATE employees SET password = ? WHERE email = ?';
 
     connection.query(query, [newPassword, email], (err) => {
         if (err) {
@@ -309,7 +310,7 @@ app.post('/api/login', (req, res) => {
     const hashedPassword = hashPassword(password);
     console.log(hashedPassword)
 
-    const query = 'SELECT * FROM Employees WHERE email = ? AND password = ?';
+    const query = 'SELECT * FROM employees WHERE email = ? AND password = ?';
     connection.query(query, [email, hashedPassword], (err, results) => {
         if (err) {
             console.error('Error logging in:', err);
