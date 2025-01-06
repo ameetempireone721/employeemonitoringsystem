@@ -47,7 +47,7 @@ console.log('process.env',process.env)
             <div className="login-container">
                 <div className="signup-header">
                     <img src={logo} alt="EmpireOne Logo" className="signup-logo" />
-                    <h2>Login{`${BASE_URL??'https://eo-monitoring-system.com'}`}</h2>
+                    <h2>Login</h2>
                 </div>
                 <form onSubmit={handleLogin}>
                     <input
