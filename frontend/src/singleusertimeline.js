@@ -68,7 +68,7 @@ const SingleUserTimeline = () => {
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL}/api/single-employee?date=${date}&email=${user.email}`, {
+            const response = await axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/single-employee?date=${date}&email=${user.email}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

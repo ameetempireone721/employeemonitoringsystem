@@ -12,12 +12,13 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
-
+console.log('process.env',process.env)
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/login`, { email, password });
             // Extract user data from the response
+            console.log(response)
             const userData = {
                 id: response.data.user.employee_id, // Replace with actual field name for user ID
                 email: response.data.user.email, // Replace with actual field name for email
@@ -46,7 +47,7 @@ const Login = () => {
             <div className="login-container">
                 <div className="signup-header">
                     <img src={logo} alt="EmpireOne Logo" className="signup-logo" />
-                    <h2>Login</h2>
+                    <h2>Login{`${BASE_URL??'https://eo-monitoring-system.com'}`}</h2>
                 </div>
                 <form onSubmit={handleLogin}>
                     <input

@@ -23,7 +23,7 @@ const ReportPage = () => {
 
     const generateReport = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/generate-report?team=${team}&date=${date}`, {
+            const response = await fetch(`${BASE_URL??'https://eo-monitoring-system.com'}/api/generate-report?team=${team}&date=${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
