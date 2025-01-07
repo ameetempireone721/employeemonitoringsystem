@@ -328,6 +328,244 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+// Route for user login
+app.post('/api/app/login', (req, res) => {
+    const { email, password } = req.body;
+
+    const hashedPassword = hashPassword(password);
+    console.log(hashedPassword)
+
+    const query = 'SELECT * FROM employees WHERE email = ? AND password = ?';
+    connection.query(query, [email, hashedPassword], (err, results) => {
+        if (err) {
+            console.error('Error logging in:', err);
+            return res.status(500).send('Error logging in. Please try again.');
+        }
+
+        if (results.length === 0) {
+            return res.status(401).send('Invalid email or password.');
+        }
+
+        const user = results[0];
+        const token = jwt.sign({ id: user.employee_id }, SECRET_KEY, { expiresIn: '10h' });
+        res.json({ message: 'Login successful', user, token });
+        
+    });
+});
+
+// Route to update agent status
+app.post('/api/app/clockin1', verifyToken, (req, res) => {
+    const { employeeId, statusName } = req.body;
+    console.log('first employee id', employeeId)
+    console.log(req.body)
+
+    if (!employeeId || !statusName) {
+        return res.status(400).send('Employee ID and status name are required.');
+    }
+
+    const query = `
+        UPDATE agent_status
+        SET end_time = NOW()
+        WHERE employee_id = ?
+        AND end_time IS NULL
+        AND status_id = (SELECT status_id FROM statuses WHERE status_name = ?);
+    `;
+
+    connection.query(query, [employeeId, statusName], (err, results) => {
+        if (err) {
+            console.error('Error updating agent status:', err);
+            return res.status(500).send('Error updating agent status.');
+        }
+        res.status(200).send('Agent status updated successfully.');
+    });
+});
+
+// Route to fetch records for today with status_id = 1
+app.get('/api/app/clockin2', verifyToken, (req, res) => {
+    const { employeeId } = req.body;
+
+    if (!employeeId) {
+        return res.status(400).send('Employee ID is required.');
+    }
+
+    const query = `
+        SELECT start_time, end_time
+        FROM agent_status
+        WHERE employee_id = ? 
+        AND DATE(start_time) = CURDATE()
+        AND status_id = 1;
+    `;
+
+    connection.query(query, [employeeId], (err, rows) => {
+        if (err) {
+            console.error('Error fetching records:', err);
+            return res.status(500).send('Error fetching records.');
+        }
+
+        res.status(200).json(rows); // Send the records as JSON response
+    });
+});
+
+// Route to handle clock-in
+app.post('/api/app/clockin3', verifyToken, (req, res) => {
+    const { employeeId } = req.body;
+    console.log("clockin3", employeeId)
+
+
+    if (!employeeId) {
+        return res.status(400).send('Employee ID is required.');
+    }
+
+    const query = `
+        INSERT INTO agent_status (employee_id, status_id, start_time)
+        VALUES (?, (SELECT status_id FROM statuses WHERE status_name = 'Available'), NOW());
+    `;
+
+    connection.query(query, [employeeId], (err, results) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).send('Error saving clock-in record.');
+        }
+
+        res.status(200).json({ message: 'Clock-in successful.', employeeId });
+    });
+});
+
+app.post('/api/app/clockout1', verifyToken, (req, res) => {
+    const { employeeId, statusName} = req.body;
+    
+
+    if (!employeeId || !statusName) {
+        return res.status(400).send('Employee ID, current status, and clock out status are required.');
+    }
+
+    const query = `
+        UPDATE agent_status
+        SET end_time = NOW()
+        WHERE employee_id = ? 
+        AND status_id = (SELECT status_id FROM statuses WHERE status_name = ?)
+        AND end_time IS NULL;
+    `;
+
+    connection.query(query, [employeeId, statusName], (err, results) => {
+        if (err) {
+            console.error('Error updating agent status:', err);
+            return res.status(500).send('Error updating agent status.');
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).send('No matching agent status found to update.');
+        }
+
+        res.status(200).send('Agent status updated successfully.');
+    });
+});
+
+// Route to fetch records for today with status_id = 1
+app.get('/api/app/clockout2', verifyToken,(req, res) => {
+    const { employeeId } = req.body;
+
+    if (!employeeId) {
+        return res.status(400).send('Employee ID is required.');
+    }
+
+    const query = `
+        SELECT start_time, end_time
+        FROM agent_status
+        WHERE employee_id = ? 
+        AND DATE(start_time) = CURDATE()
+        AND status_id = 1;
+    `;
+
+    connection.query(query, [employeeId], (err, rows) => {
+        if (err) {
+            console.error('Error fetching records:', err);
+            return res.status(500).send('Error fetching records.');
+        }
+
+        if (rows.length === 0) {
+            return res.status(404).send('No records found for the given employee ID.');
+        }
+
+        res.status(200).json(rows); // Send the records as JSON response
+    });
+});
+
+// mark idle
+app.post('/api/app/markidle', verifyToken,(req, res) => {
+    const { employeeId } = req.body;
+
+    if (!employeeId) {
+        return res.status(400).send('Employee ID is required.');
+    }
+
+    const query = `
+        INSERT INTO agent_status (employee_id, status_id, start_time)
+        VALUES (?, (SELECT status_id FROM statuses WHERE status_name = 'Idle'), NOW());
+    `;
+
+    connection.query(query, [employeeId], (err, results) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).send('Error marking idle');
+        }
+
+        res.status(200).json({ message: 'mark idle successful', employeeId });
+    });
+});
+
+app.post('/api/app/change-status', verifyToken,(req, res) => {
+    const { employeeId, statusName} = req.body;
+
+    if (!employeeId || !statusName) {
+        return res.status(400).send('Employee ID, current status, and clock out status are required.');
+    }
+
+    const query = `
+        UPDATE agent_status
+        SET end_time = NOW()
+        WHERE employee_id = ? 
+        AND status_id = (SELECT status_id FROM statuses WHERE status_name = ?)
+        AND end_time IS NULL;
+    `;
+
+    connection.query(query, [employeeId, statusName], (err, results) => {
+        if (err) {
+            console.error('Error updating agent status:', err);
+            return res.status(500).send('Error updating agent status.');
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).send('No matching agent status found to update.');
+        }
+
+        res.status(200).send('Agent status updated successfully.');
+    });
+});
+
+app.post('/api/app/activitymarked', verifyToken,(req, res) => {
+    const { employeeId, statusName, notes } = req.body;
+
+    if (!employeeId || !statusName) {
+        return res.status(400).send('Employee ID, and status value');
+    }
+
+    const query = `
+        INSERT INTO agent_status (employee_id, status_id, start_time, notes)
+        VALUES (?, (SELECT status_id FROM statuses WHERE status_name = ?), NOW(), ?);
+    `;
+
+    connection.query(query, [employeeId, statusName, notes|| null], (err, results) => {
+        if (err) {
+            console.error('Error inserting agent status:', err);
+            return res.status(500).send('Error inserting agent status.');
+        }
+
+        res.status(200).send('Agent status recorded successfully.');
+    });
+});
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
