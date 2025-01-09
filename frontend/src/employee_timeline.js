@@ -67,7 +67,7 @@ const EmployeeTimeline = () => {
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/employee-status?date=${date}`, {
+            const response = await axios.get(`${BASE_URL}/api/employee-status?date=${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

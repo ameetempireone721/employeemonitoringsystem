@@ -7,16 +7,16 @@ import { AuthContext } from './AuthContext';
 import BASE_URL from './config';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('ameet@empireonegroup.com');
+    const [password, setPassword] = useState('Tumbin45');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
-console.log('process.env',process.env)
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/login`, { email, password });
+            const response = await axios.post(`${BASE_URL}/api/login`, { email, password });
             // Extract user data from the response
             console.log(response)
             const userData = {
