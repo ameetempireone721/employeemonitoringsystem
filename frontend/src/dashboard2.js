@@ -103,7 +103,7 @@ const Dashboard2 = () => {
     const [filterName, setFilterName] = useState('');
     const [filterDate, setFilterDate] = useState('');
     const token = localStorage.getItem('token');
-    
+    // alert(token)
     const fetchData = async () => {
             try {
                 const response = await axios.get(`${BASE_URL}/api/agent-status`, {
