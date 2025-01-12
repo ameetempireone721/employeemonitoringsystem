@@ -3,31 +3,37 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import logo from './assets/Picture1.png';
-import { AuthContext } from './AuthContext';
+//import { AuthContext } from './AuthContext';
 import BASE_URL from './config';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('ameet@empireonegroup.com');
+    const [password, setPassword] = useState('Tumbin45');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
+    //const { login } = useContext(AuthContext);
+    
+    //const { login } = useContext(AuthContext);
 console.log('process.env',process.env)
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/login`, { email, password });
+            const response = await axios.post(`${BASE_URL}/api/login`, { email, password });
             // Extract user data from the response
-            console.log(response)
+           
+            //console.log('JSON.stringify(userData)',response.data.token)
+            const token = response.data.token;
             const userData = {
                 id: response.data.user.employee_id, // Replace with actual field name for user ID
                 email: response.data.user.email, // Replace with actual field name for email
                 isAdmin: response.data.user.is_admin === 1, // Adjust based on your API response
             };
             localStorage.setItem('user', JSON.stringify(userData));
+            //localStorage.setItem('token',response.data.token)
+            localStorage.setItem('token', token);
 
         // Call login function to set session
-        login(userData);
+        //login(userData);
             if (response.data['user']['is_admin']===1)
                 navigate(`/dashboard?email=${encodeURIComponent(response.data.user.email)}`);
             else

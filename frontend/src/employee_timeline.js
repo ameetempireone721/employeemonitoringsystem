@@ -62,12 +62,13 @@ const EmployeeTimeline = () => {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
     const [nameFilter, setNameFilter] = useState(""); // New state for name filter
-    const token = localStorage.getItem('token');
+    const rawToken = localStorage.getItem('token'); // Retrieve the token
+    const token = rawToken ? rawToken.replace(/^"(.*)"$/, '$1') : null;
 
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/employee-status?date=${date}`, {
+            const response = await axios.get(`${BASE_URL}/api/employee-status?date=${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

@@ -4,7 +4,6 @@ import { AuthContext } from './AuthContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
     const { user } = useContext(AuthContext);
-    console.log("Protected:", user)
 
     if (!user) {
         // Redirect to login if not authenticated

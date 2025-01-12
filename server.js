@@ -291,9 +291,11 @@ app.post('/api/reset-password', verifyToken,(req, res) => {
         return res.status(400).send('Email and new password are required.');
     }
 
+    const hashedPassword = hashPassword(newPassword);
+
     const query = 'UPDATE employees SET password = ? WHERE email = ?';
 
-    connection.query(query, [newPassword, email], (err) => {
+    connection.query(query, [hashedPassword, email], (err) => {
         if (err) {
             console.error('Error resetting password:', err);
             return res.status(500).send('Error resetting password.');

@@ -19,11 +19,12 @@ const ReportPage = () => {
         setDate(event.target.value);
     };
 
-    const token = localStorage.getItem('token');
+    const rawToken = localStorage.getItem('token'); // Retrieve the token
+    const token = rawToken ? rawToken.replace(/^"(.*)"$/, '$1') : null;
 
     const generateReport = async () => {
         try {
-            const response = await fetch(`${BASE_URL??'https://eo-monitoring-system.com'}/api/generate-report?team=${team}&date=${date}`, {
+            const response = await fetch(`${BASE_URL}/api/generate-report?team=${team}&date=${date}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

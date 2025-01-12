@@ -1,3 +1,3 @@
 // config.js
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+const BASE_URL = 'https://megscafe.store';
 export default BASE_URL;

@@ -102,11 +102,13 @@ const Dashboard2 = () => {
     const [loading, setLoading] = useState(true);
     const [filterName, setFilterName] = useState('');
     const [filterDate, setFilterDate] = useState('');
-    const token = localStorage.getItem('token');
+    // alert(token)
+    const rawToken = localStorage.getItem('token'); // Retrieve the token
+    const token = rawToken ? rawToken.replace(/^"(.*)"$/, '$1') : null;
     
     const fetchData = async () => {
             try {
-                const response = await axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/agent-status`, {
+                const response = await axios.get(`${BASE_URL}/api/agent-status`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

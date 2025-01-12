@@ -5,11 +5,11 @@ import styled from '@emotion/styled';
 import { Button } from '@mui/material';
 
 const LogoutButton = () => {
-    const { logout } = useContext(AuthContext);
+    //const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        logout(); // Perform logout action
+        //logout(); // Perform logout action
         navigate('/'); // Redirect to the login page or any other page
     };
     // Styled components for enhanced UI

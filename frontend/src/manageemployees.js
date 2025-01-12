@@ -94,11 +94,12 @@ const UpdateTeamPage = () => {
     const navigate = useNavigate();
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
-    const token = localStorage.getItem('token');
+    const rawToken = localStorage.getItem('token'); // Retrieve the token
+    const token = rawToken ? rawToken.replace(/^"(.*)"$/, '$1') : null;
     
 
     useEffect(() => {
-        axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/getemployees`, {
+        axios.get(`${BASE_URL}/api/getemployees`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -115,7 +116,7 @@ const UpdateTeamPage = () => {
         const employeeName = employee ? employee.name : 'Unknown Employee';
         const token = localStorage.getItem('token');
 
-        axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/update-team`, { employeeId, newTeam }, {
+        axios.post(`${BASE_URL}/api/update-team`, { employeeId, newTeam }, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -151,7 +152,7 @@ const UpdateTeamPage = () => {
         }
 
         try {
-            await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/signup`, {
+            await axios.post(`${BASE_URL}/api/signup`, {
                 firstName,
                 lastName,
                 email,
@@ -188,7 +189,7 @@ const UpdateTeamPage = () => {
         setSignupError('');
 
         try {
-            await axios.post(`${BASE_URL??'https://eo-monitoring-system.com'}/api/reset-password`, { email: resetEmail, newPassword: resetPassword }, {
+            await axios.post(`${BASE_URL}/api/reset-password`, { email: resetEmail, newPassword: resetPassword }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

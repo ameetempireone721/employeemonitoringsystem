@@ -26,17 +26,15 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
         <Router>
-        <AuthProvider>
             <Routes>
-                <Route path="/dashboard" element={ <ProtectedRoute allowedRoles={['admin']}> <Dashboard2 /></ProtectedRoute>} />
+                <Route path="/dashboard" element={ <Dashboard2 />} />
                 <Route path="/" element={<Login />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
-                <Route path="/timeline" element={<ProtectedRoute allowedRoles={['admin']}> <EmployeeTimeline/> </ProtectedRoute>} />
-                <Route path="/report" element={<ProtectedRoute allowedRoles={['admin']}> <ReportPage/> </ProtectedRoute>} />
-                <Route path="/employee_timeline" element={<ProtectedRoute allowedRoles={['user']}><SingleUserTimeline/> </ProtectedRoute> } />
-                <Route path="/updateteam" element={<ProtectedRoute allowedRoles={['admin']}> <UpdateTeamPage /> </ProtectedRoute>} />
+                <Route path="/timeline" element={<EmployeeTimeline/> }/>
+                <Route path="/report" element={<ReportPage/>} />
+                <Route path="/employee_timeline" element={<SingleUserTimeline/>} />
+                <Route path="/updateteam" element={<UpdateTeamPage /> } />
             </Routes>
-            </AuthProvider>
         </Router>
         </ThemeProvider>
     );

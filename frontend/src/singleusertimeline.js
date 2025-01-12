@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Container, Typography, TextField, Button, CircularProgress, Tooltip, Grid } from "@mui/material";
 import styled from "@emotion/styled";
-import { AuthContext } from "./AuthContext";
+//import { AuthContext } from "./AuthContext";
 import LogoutButton from "./logout";
 import BASE_URL from "./config";
 
@@ -62,13 +62,15 @@ const SingleUserTimeline = () => {
     const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // Default to today
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(false);
-    const { user } = useContext(AuthContext);
-    const token = localStorage.getItem('token');
+    //const { user } = useContext(AuthContext);
+    const rawToken = localStorage.getItem('token'); // Retrieve the token
+    const token = rawToken ? rawToken.replace(/^"(.*)"$/, '$1') : null;
+    const user = JSON.parse(localStorage.getItem('user'));
     
     const fetchRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${BASE_URL??'https://eo-monitoring-system.com'}/api/single-employee?date=${date}&email=${user.email}`, {
+            const response = await axios.get(`${BASE_URL}/api/single-employee?date=${date}&email=${user.email}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
