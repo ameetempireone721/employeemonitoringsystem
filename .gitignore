@@ -4,7 +4,6 @@
 # Ignore node_modules in frontend directory
 /frontend/node_modules/
 
-/frontend/build/
 
 # Ignore log files
 *.log
