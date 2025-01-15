@@ -7,8 +7,8 @@ import logo from './assets/Picture1.png';
 import BASE_URL from './config';
 
 const Login = () => {
-    const [email, setEmail] = useState('ameet@empireonegroup.com');
-    const [password, setPassword] = useState('Tumbin45');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     //const { login } = useContext(AuthContext);
